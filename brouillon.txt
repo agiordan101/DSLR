@@ -1,0 +1,18 @@
+
+    DSLR
+
+V.1 Data Analysis
+
+Cout : Number of values <=> Nombre de valeurs
+Mean : Average <=> Moyenne
+std : Standar deviation <=> Ecart type
+Min : Minimal value <=> Valeur minimum
+25% : Quartile 1
+50% : Median value <=> Valeur médianne
+75% : Quartile 3
+Max : Maximal value <=> Valeur maximale
+
+Etape 1 -> Trier les valeurs
+Etape 2 -> Calculer
+
+dataset : 1ere dimension sont les elèves, 2eme leurs features
