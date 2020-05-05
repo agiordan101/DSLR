@@ -2,7 +2,7 @@ import sys
 import plotly.graph_objects as go
 from plotly.offline import plot
 
-#Open dataset
+#Open dataset and get lines
 dataset_file = open(sys.argv[1], "r")
 lines = dataset_file.read().split('\n')
 
