@@ -1,5 +1,6 @@
 import sys
 import math
+import numpy as np
 
 def is_number(elem):
     if (elem == ''):
@@ -69,16 +70,23 @@ def maxValue(feature):
             tmp = value
     return tmp
 
-#Main code
+def printValue(value):
+    if (is_number(value)):
+        print("%15.3f"%value, end="")
+    else:
+        print("%15s"%value, end="")
 
-#Open dataset
+    #Main code#
+
+#Open dataset and get lines
 dataset_file = open(sys.argv[1], "r")
 lines = dataset_file.read().split('\n')
 
-#Save dataset
+#Save dataset by students
 features = lines[0].split(",")
 del lines[0]
 del lines[-1]
+#del features[-12:]
 dataset = []
 for i in lines:
     dataset.append(i.split(","))
@@ -96,18 +104,6 @@ for i in range(len(features)):
     tmp.sort()
     data.append(tmp)
 
-"""
-print(data[0])
-print(len(data[0]))
-print(average(data[0]))
-print(standarDeviation(data[0]))
-print(minValue(data[0]))
-print(quartile(data[0], 1))
-print(quartile(data[0], 2))
-print(quartile(data[0], 3))
-print(maxValue(data[0]))
-"""
-
 #Use data
 count = []
 mean = []
@@ -117,79 +113,51 @@ Q1 = []
 Q2 = []
 Q3 = []
 maxi = []
+extent = []
 for feature in data:
     count.append(len(feature))
-    if (is_number(feature[0])):
-        mean.append(average(feature))
-        std.append(standarDeviation(feature))
     mini.append(minValue(feature))
     Q1.append(quartile(feature, 1))
     Q2.append(quartile(feature, 2))
     Q3.append(quartile(feature, 3))
-    maxi.append(maxValue(feature))        
+    maxi.append(maxValue(feature))
+    if (is_number(feature[0])):
+        mean.append(average(feature))
+        std.append(standarDeviation(feature))
+        extent.append(maxi[-1] - mini[-1])
+    else:
+        mean.append(np.nan)
+        std.append(np.nan)
+        extent.append(np.nan)
 
-"""
-#Print data
-print(count)
-print(mean)
-print(std)
-print(mini)
-print(Q1)
-print(Q2)
-print(Q3)
-print(maxi)
-print("\n\n")
-"""
-"""
-print("count\t\tmean\t\tstd\t\tmin\t\t25%\t\t50%\t\t75%\t\tmax")
-for i in range(len(features)):
-    print(features[i], end="\t\t")
-    print(count[i], end="\t\t")
-    print(mean[i], end="\t\t")
-    print(std[i], end="\t\t")
-    print(mini[i], end="\t\t")
-    print(Q1[i], end="\t\t")
-    print(Q2[i], end="\t\t")
-    print(Q3[i], end="\t\t")
-    print(maxi[i])
-"""
+#Find max length features string
+maxLengthFeature = 0
 for feature in features:
-    print("%22s"%feature, end="")
-for value in count:
-    print("%22.2f"%value, end="")
-for value in mean:
-    print("%22.2f"%value, end="")
-for value in std:
-    print("%22.2f"%value, end="")
-for value in mini:
-    print("%22.2f"%value, end="")
-for value in Q1:
-    print("%22.2f"%value, end="")
-for value in Q2:
-    print("%22.2f"%value, end="")
-for value in Q3:
-    print("%22.2f"%value, end="")
-for value in maxi:
-    print("%22.2f"%value, end="")
+    if (len(feature) > maxLengthFeature):
+        maxLengthFeature = len(feature)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#Print data
+for j in range(maxLengthFeature + 1):
+    print(" ", end = "")
+printValue("count")
+printValue("mean")
+printValue("std")
+printValue("extent")
+printValue("min")
+printValue("25%")
+printValue("50%")
+printValue("75%")
+printValue("max")
+for i in range(len(features)):
+    print("\n%s"%features[i], end="")
+    for j in range(maxLengthFeature + 1 - len(features[i])):
+        print(" ", end = "")
+    printValue(count[i])
+    printValue(mean[i])
+    printValue(std[i])
+    printValue(extent[i])
+    printValue(mini[i])
+    printValue(Q1[i])
+    printValue(Q2[i])
+    printValue(Q3[i])
+    printValue(maxi[i])
