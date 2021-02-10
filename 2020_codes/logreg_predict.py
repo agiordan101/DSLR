@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-from binary_logreg import *
+from logreg_binary import *
 
 def open_files():
     #Open dataset file
