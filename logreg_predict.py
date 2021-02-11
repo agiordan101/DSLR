@@ -3,35 +3,43 @@ import numpy as np
 from logreg import Logreg
 
 def open_files():
-    #Open dataset file
-    dataset_file = open(sys.argv[1], 'r')
-    lines = dataset_file.read()
-    dataset_file.close()
+	#Open dataset file
+	dataset_file = open(sys.argv[1], 'r')
+	lines = dataset_file.read()
+	dataset_file.close()
 
-    #Open weights file
-    weights_file = open(sys.argv[2], 'r')
-    models = weights_file.read()
-    weights_file.close()    
+	#Open weights file
+	weights_file = open(sys.argv[2], 'r')
+	models = weights_file.read()
+	weights_file.close()    
 
-    return lines, models
+	return lines, models
 
 def parse(lines, model):
 
 	# Titles
-    del lines[0]
+	del lines[0]
 	# \n
-    del lines[-1]
+	del lines[-1]
 
 	#Save weights
 	#Save dataset
-	return [[float(x) if x.isnumeric() else 0 for x in neuron.split(',')] for neuron in model.split("\n")],
-			[[float(x) if x.isnumeric() else 0 for x in student.split(',')[6:]] for student in lines.split("\n")]
+	return [[float(x) if x.isnumeric() else 0 for x in neuron.split(',')] for neuron in model.split("\n")], [[float(x) if x.isnumeric() else 0 for x in student.split(',')[6:]] for student in lines.split("\n")]
 
 
 if len(sys.argv) != 3:
-	print("2 arguments needed")
+	print("2 arguments needed: dataset weights")
 	exit(1)
 
+# a = np.array(	[[2, 3],
+# 				[4, 5]])
+# b = np.array([1, 1.5])
+# print(a)
+# print(b)
+# print()
+# print(np.matmul(a, b))
+# print(np.matmul(a, b.T))
+# print(np.matmul(a.T, b))
 
 # Parsing
 data = open_files()
@@ -47,8 +55,8 @@ print(f"Weights: {weights}")
 houses_file = open("houses.csv", 'w')
 houses_file.write("Index,Hogwarts House\n")
 for i, student in enumerate(students):
-    houses_file.write(str(i))
-    houses_file.write(",")
-    houses_file.write(sorting_hat(student))
-    print("\n")
+	houses_file.write(str(i))
+	houses_file.write(",")
+	houses_file.write(sorting_hat(student))
+	print("\n")
 houses_file.close()
