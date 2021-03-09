@@ -53,22 +53,20 @@ model = [Logreg(len(weights), weights=weights) for weights in model]
 houses_file = open("houses.csv", 'w')
 houses_file.write("Index,Hogwarts House\n")
 
-# for i, features, neuron in zip(range(4), inputs, model):
-for epoch in range(2):
-	for i, features in enumerate(inputs[:1]):
+for i, features in enumerate(inputs[:1]):
 
-		houses_file.write(str(i))
-		houses_file.write(",")
+	houses_file.write(str(i))
+	houses_file.write(",")
 
-		predictions = [neuron.forward(features[:4]) for neuron in model]
-		house = house_matrix[np.argmax(predictions)]
+	predictions = [neuron.forward(features[:4]) for neuron in model]
+	house = house_matrix[np.argmax(predictions)]
 
-		if i == 0:
-			print(f"{i} ->\t{features}")
-			print(f"Prediction:\t{predictions}")
-			print(f"House:\t{house}")
+	if i == 0:
+		print(f"{i} ->\t{features}")
+		print(f"Prediction:\t{predictions}")
+		print(f"House:\t{house}")
 
-		houses_file.write(house)
-		houses_file.write('\n')
+	houses_file.write(house)
+	houses_file.write('\n')
 
 houses_file.close()

@@ -7,6 +7,7 @@ class Logreg():
 	def sigmoid(self, x):
 		# return np.array([1 / (1 + np.exp(-x)) for x in np.nditer(inputs)])
 		sig = 1 / (1 + np.exp(-x))
+		print(f"sig({x}) = {sig}")
 		return sig
 
 	# @classmethod
@@ -14,17 +15,19 @@ class Logreg():
 	# 	return np.array([sigmoid(x) for x in np.nditer(inputs)])
 
 
-	def __init__(self, n_inputs, weights=None, lr=0.01):
+	def __init__(self, n_inputs, weights=None, lr=0.1, name=None):
 
-		print(f"Logreg init(), weights={weights}")
+		print(f"Logreg init(), {n_inputs} features, weights={weights}, name={name}")
 		if weights:
 			# Last weight = Bias
 			self.w = np.array(weights[:-1])
 			self.b = weights[-1]
 		else:
-			self.w = np.random.rand(n_inputs)
+			self.w = np.random.rand(n_inputs) * 2 - 1
 			self.b = np.random.rand()
+		print(f"\tWeight init: {self.w}")
 		self.lr = lr
+		self.name = name
 
 
 	def forward(self, inputs):
@@ -37,7 +40,7 @@ class Logreg():
 		self.weighted_sum = np.dot(self.w, inputs) + self.b
 		return self.sigmoid(self.weighted_sum)
 
-	def get_batch(d1, d2, GD_batchsize=0.2):
+	def get_batch(self, d1, d2, GD_batchsize=0.2):
 
 		batchs = range(0, len(d1), int(GD_batchsize * len(d1)))
 		batchs_min = batchs[:-1]
@@ -47,52 +50,44 @@ class Logreg():
 		for bound_min, bound_max in zip(batchs_min, batchs_max):
 			yield d1[bound_min:bound_max], d2[bound_min:bound_max]
 
-	# def gradient_descent(train_x, train_y): # np.array m, nfeatures
-
-	# 	depth_inv = 1 / len(train_x)		# int
-
-	# 	A = self.forward(train_x)	# np.array m
-	# 	fa = sigmoid(A)				# np.array m # Why use Activation and not weighted sum ???
-
-	# 	# dA/dws = dA/dOut * dOut/dws
-	# 	dA = (A - train_y) * fa * (1 - fa)
-
-	# 	# Average gradient of each inputs series to get mean learning signal
-	# 	# Cross product: dA/dw = dA/dws * dws/dw
-	# 	# Not sure: We need to translate the matrix to iterate activation other each inputs series
-	# 	dW = depth_inv * np.matmul(train_x, dA)
-	# 	# dW = np.array([train_x for gradient in zip(train_x, dA.nditer())])		# np.array m, nfeatures
-	# 	dB = depth_inv * np.sum(dA)
-
-	# 	self.w = self.w - self.lr * dW
-	# 	self.w = self.w - self.lr * dB
-
-	def gradient_descent(features, target):
+	def gradient_descent(self, features, target):
 
 		prediction = self.forward(features)
-		
-		dloss = target - prediction
+		# print(f"Features: {features}")
+		print(f"self.w: {self.w}") 
+		print(f"Prediction: {prediction}")
+		print(f"Target: {target}")
+
+		dloss = prediction - target
 		dfa = self.sigmoid(self.weighted_sum) * (1 - self.sigmoid(self.weighted_sum))
 		dws = features
 
+		# dE/dw = dE/dOut * dOut/dws * dws/dw
 		self.w = self.w - self.lr * dws * dfa * dloss
 		self.b = self.b - self.lr * 1 * dfa * dloss
+
+		print(f"Loss: {dloss * dloss}")
+		print(f"g1: {dloss}")
+		print(f"g2: {dfa}")
+		print(f"g3: {dws}")
+		print(f"gradient: {dws * dfa * dloss}")
+		print(f"self.w: {self.w}")
 
 	# def backpropagation(self, train_x, train_y, GD_method='SGD'):
 	# 	"""
 	# 		dE/dw = dE/dOut * dOut/dws * dws/dw
 	# 	"""
-		# data = np.choices(zip(inputs, targets), len(inputs) / 4)
+	# 	data = np.choices(zip(inputs, targets), len(inputs) / 4)
 
-		# if GD_method == "SGD":
+	# 	if GD_method == "SGD":
 
-		# 	for input_batch, target_batch in get_batch(train_x, train_y):
-		# 		self.gradient_descent(input_batch, target_batch)
+	# 		for input_batch, target_batch in get_batch(train_x, train_y):
+	# 			self.gradient_descent(input_batch, target_batch)
 
-		# else:
-			# self.gradient_descent(inputs, targets)
+	# 	else:
+	# 		self.gradient_descent(inputs, targets)
 
-	def save_weights(file_path):
+	def save_weights(self, file_path):
 
 		with open(file_path, 'w') as f:
 			[f.write(f"{w}, ") for w in np.nditer(self.w)]
