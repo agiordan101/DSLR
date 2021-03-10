@@ -35,7 +35,7 @@ def parse(dataset_path):
 
 	return np.array(inputs), np.array(targets)
 
-def standardisation(features):
+def normalization(features):
 
 	print(f"features: {features}")
 	exit(0)

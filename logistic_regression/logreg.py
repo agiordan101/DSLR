@@ -51,6 +51,15 @@ class Logreg():
 			yield d1[bound_min:bound_max], d2[bound_min:bound_max]
 
 	def gradient_descent(self, features, target):
+		"""
+		J(θ)		-> Loss Function
+		∂J(θ) / ∂θj	-> Dérivé de la Loss Function en fonction d'une weight j
+		hθ(xi)		-> Prediction du model avec matrice de poids θ et features d'entrée xi
+		yi			-> Target / Résultat attendu
+
+		J(θ) = −AVERAGE[yi * log(hθ(xi)) + (1 − yi) log(1 − hθ(xi))]
+		∂J(θ) / ∂θj = AVERAGE[ (hθ(xi) − yi)xi ]
+		"""
 
 		prediction = self.forward(features)
 		# print(f"Features: {features}")
