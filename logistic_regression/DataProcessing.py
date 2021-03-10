@@ -3,16 +3,16 @@ import pandas as pd
 
 class DataProcessing():
 
-	def __init__(self, data, column=None):
+	def __init__(self, data, columns=None):
 
 		if not isinstance(data, pd.DataFrame):
-			data = pd.DataFrame(data=data, column=column)
+			data = pd.DataFrame(data=data, columns=columns)
 		self.df = data
-		self.column = column
+		self.columns = columns
 		self.normalization_data = []
 		self.standardization_data = []
 
-	def normalize():
+	def normalize(self):
 
 		new_lst = []
 
@@ -23,14 +23,22 @@ class DataProcessing():
 
 		else:
 			for feature, column in self.df.items():
-				_min = column.min
-				_max = column.max
+				_min = column.min()
+				_max = column.max()
 				self.normalization_data.append([_min, _max])
 				new_lst.append([(x - _min) / (_max - _min) for x in column.values])
 
-		self.df = pd.DataFrame(data=new_lst, column=self.column)
+		print(f"new_lst: {new_lst}")
+		self.df = pd.DataFrame(data=new_lst, columns=self.columns)
 
-	def save_data(file_path, normalization=False, standardization=False):
+	def get_data(self, data_type="2d_np_array"):
+
+		if data_type == "2d_np_array":
+			return self.df.to_numpy()
+		elif data_type == "DataFrame":
+			return self.df
+
+	def save_data(self, file_path, normalization=False, standardization=False):
 
 		with open(file_path, 'w') as f:
 
@@ -46,7 +54,7 @@ class DataProcessing():
 
 			f.close()
 
-	def load_data(file_path, normalization=False, standardization=False):
+	def load_data(self, file_path, normalization=False, standardization=False):
 
 		with open(file_path, 'r') as f:
 			data = f.read()

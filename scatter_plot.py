@@ -2,6 +2,11 @@ import sys
 import plotly.express as px
 from plotly.offline import plot
 
+# Protection
+if len(sys.argv) != 2:
+	print("1 argument needed: dataset")
+	exit(1)
+
 #Open dataset and get lines
 dataset_file = open(sys.argv[1], "r")
 lines = dataset_file.read().split('\n')

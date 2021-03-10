@@ -78,6 +78,11 @@ def printValue(value):
 
     #Main code#
 
+# Protection
+if len(sys.argv) != 2:
+	print("1 arguments needed: dataset")
+	exit(1)
+
 #Open dataset and get lines
 dataset_file = open(sys.argv[1], "r")
 lines = dataset_file.read().split('\n')

@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 from logreg import Logreg
+from DataProcessing import DataProcessing
 
 house_matrix = ["Gryffindor",
 				"Hufflepuff",
@@ -16,12 +17,15 @@ def parse(dataset_path):
 	
 	#Open dataset file
 	dataset_file = open(dataset_path, 'r')
-	features = dataset_file.read()
+	features_str = dataset_file.read()
 	dataset_file.close()
+
+	features_lst = features_str.split("\n")
+	columns_name = features_lst[0].split(',')[6:]
 
 	inputs = []
 	targets = []
-	for student_str in features.split("\n")[1:-1]:
+	for student_str in features_lst[1:-1]:
 		# print(f"Student: {strstudent.split(',')}")
 		student_lst = student_str.split(',')
 
@@ -33,29 +37,31 @@ def parse(dataset_path):
 		# print(f"inputs: {fstudent}\n")
 		inputs.append(fstudent)
 
-	return np.array(inputs), np.array(targets)
+	return np.array(inputs), np.array(targets), columns_name
 
-def normalization(features):
-
-	print(f"features: {features}")
-	exit(0)
 
 # Protection
 if len(sys.argv) != 2:
-	print("2 arguments needed: dataset weights")
+	print("1 argument needed: dataset")
 	exit(1)
 
 # Parsing
-inputs, targets = parse(sys.argv[1])
-n_features = len(inputs[0])
+inputs, targets, columns_name = parse(sys.argv[1])
 
-inputs = normalize(inputs)
+print(columns_name)
+print(len(columns_name))
+print(len(columns_name))
+print()
+
+dataProcessing = DataProcessing(inputs[:10], columns=columns_name)
+dataProcessing.normalize()
+inputs = dataProcessing.get_data()
 
 print(inputs)
 print(targets)
 
 # Create model with random weights
-models = [Logreg(n_features, name=name) for name in house_matrix]
+models = [Logreg(len(columns_name), name=name) for name in house_matrix]
 
 for epoch in range(2):
 	print(f"\n--- EPOCH {epoch} ---\n")
