@@ -5,6 +5,7 @@ class DataProcessing():
 
 	def __init__(self, data, columns=None):
 
+		# print(f"Data: {data}")
 		if not isinstance(data, pd.DataFrame):
 			data = pd.DataFrame(data=data, columns=columns)
 		self.df = data
@@ -14,22 +15,24 @@ class DataProcessing():
 
 	def normalize(self):
 
-		new_lst = []
+		# new_lst = []
+		data = {}
 
 		if self.normalization_data:
 			
 			for item, data in zip(self.df.items(), self.normalization_data):
-				new_lst.append([(x - data[0]) / (data[1] - data[0]) for x in item[1].values])
+				# new_lst.append([(x - data[0]) / (data[1] - data[0]) for x in item[1].values])
+				data[item[0]] = [(x - _min) / (_max - _min) for x in column.values]
 
 		else:
 			for feature, column in self.df.items():
 				_min = column.min()
 				_max = column.max()
 				self.normalization_data.append([_min, _max])
-				new_lst.append([(x - _min) / (_max - _min) for x in column.values])
+				# new_lst.append([(x - _min) / (_max - _min) for x in column.values])
+				data[feature] = [(x - _min) / (_max - _min) for x in column.values]
 
-		print(f"new_lst: {new_lst}")
-		self.df = pd.DataFrame(data=new_lst, columns=self.columns)
+		self.df = pd.DataFrame(data=data, columns=self.columns)
 
 	def get_data(self, data_type="2d_np_array"):
 

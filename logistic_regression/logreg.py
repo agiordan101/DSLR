@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 # Logistic Regression One vs All
@@ -7,13 +8,7 @@ class Logreg():
 	def sigmoid(self, x):
 		# return np.array([1 / (1 + np.exp(-x)) for x in np.nditer(inputs)])
 		sig = 1 / (1 + np.exp(-x))
-		print(f"sig({x}) = {sig}")
 		return sig
-
-	# @classmethod
-	# def fa(inputs):
-	# 	return np.array([sigmoid(x) for x in np.nditer(inputs)])
-
 
 	def __init__(self, n_inputs, weights=None, lr=0.1, name=None):
 
@@ -52,22 +47,25 @@ class Logreg():
 
 	def gradient_descent(self, features, target):
 		"""
-		J(θ)		-> Loss Function
-		∂J(θ) / ∂θj	-> Dérivé de la Loss Function en fonction d'une weight j
-		hθ(xi)		-> Prediction du model avec matrice de poids θ et features d'entrée xi
-		yi			-> Target / Résultat attendu
+			A l'echelle du model (4 neurons) :
 
-		J(θ) = −AVERAGE[yi * log(hθ(xi)) + (1 − yi) log(1 − hθ(xi))]
-		∂J(θ) / ∂θj = AVERAGE[ (hθ(xi) − yi)xi ]
+				J(θ)		-> Loss Function
+				∂J(θ) / ∂θj	-> Dérivé de la Loss Function en fonction d'une weight j
+				hθ(xi)		-> Prediction du model avec matrice de poids θ et features d'entrée xi
+				yi			-> Target / Résultat attendu
+
+				J(θ) = −AVERAGE[yi * log(hθ(xi)) + (1 − yi) * log(1 − hθ(xi))]
+				∂J(θ) / ∂θj = AVERAGE[ (hθ(xi) − yi)xi ]
 		"""
 
 		prediction = self.forward(features)
 		# print(f"Features: {features}")
-		print(f"self.w: {self.w}") 
-		print(f"Prediction: {prediction}")
-		print(f"Target: {target}")
+		# print(f"self.w: {self.w}") 
+		# print(f"Prediction: {prediction}")
+		# print(f"Target:     {target}")
 
-		dloss = prediction - target
+		loss = -target * math.log(prediction) - (1 - target) * math.log(1 - prediction)
+		dloss = (prediction - target)
 		dfa = self.sigmoid(self.weighted_sum) * (1 - self.sigmoid(self.weighted_sum))
 		dws = features
 
@@ -75,12 +73,13 @@ class Logreg():
 		self.w = self.w - self.lr * dws * dfa * dloss
 		self.b = self.b - self.lr * 1 * dfa * dloss
 
-		print(f"Loss: {dloss * dloss}")
-		print(f"g1: {dloss}")
-		print(f"g2: {dfa}")
-		print(f"g3: {dws}")
-		print(f"gradient: {dws * dfa * dloss}")
-		print(f"self.w: {self.w}")
+		# print(f"Loss: {loss}")
+		# print(f"dLoss: {dloss}")
+		# print(f"dfa: {dfa}")
+		# print(f"dws: {dws}")
+		# print(f"gradient: {dws * dfa * dloss}")
+		# print(f"self.w: {self.w}")
+		return loss, prediction
 
 	# def backpropagation(self, train_x, train_y, GD_method='SGD'):
 	# 	"""

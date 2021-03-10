@@ -8,36 +8,41 @@ house_matrix = ["Gryffindor",
 				"Ravenclaw",
 				"Slytherin"]
 
+pertinent_features = {'Astronomy': 7,
+						'Herbology': 8,
+						'Defense Against the Dark Arts': 9,
+						'Ancient Runes': 12}
+
 def house_to_nparray(house):
 	target = np.zeros(4)
 	target[house_matrix.index(house)] = 1
 	return target
 
 def parse(dataset_path):
-	
+
+
 	#Open dataset file
 	dataset_file = open(dataset_path, 'r')
 	features_str = dataset_file.read()
 	dataset_file.close()
 
-	features_lst = features_str.split("\n")
-	columns_name = features_lst[0].split(',')[6:]
-
-	inputs = []
+	# Init data structure
 	targets = []
-	for student_str in features_lst[1:-1]:
-		# print(f"Student: {strstudent.split(',')}")
-		student_lst = student_str.split(',')
+	features = {}
+	for feature in pertinent_features.keys():
+		features[feature] = []
 
-		targets.append(house_to_nparray(student_lst[1]))
+	# Fill
+	for student_str in features_str.split("\n")[1:-1]:
+		student_strlst = student_str.split(',')
 
-		fstudent = []
-		for x in student_lst[6:]:
-			fstudent.append(float(x) if len(x) else 0)
-		# print(f"inputs: {fstudent}\n")
-		inputs.append(fstudent)
+		targets.append(house_to_nparray(student_strlst[1]))
 
-	return np.array(inputs), np.array(targets), columns_name
+		for feature, i in pertinent_features.items():
+			features[feature].append(float(student_strlst[i]) if len(student_strlst[i]) else 0)
+
+	# print(f"features: {features}\n")
+	return features, np.array(targets)
 
 
 # Protection
@@ -46,28 +51,50 @@ if len(sys.argv) != 2:
 	exit(1)
 
 # Parsing
-inputs, targets, columns_name = parse(sys.argv[1])
+features, targets = parse(sys.argv[1])
+columns_name = list(pertinent_features.keys())
 
-print(columns_name)
-print(len(columns_name))
-print(len(columns_name))
-print()
-
-dataProcessing = DataProcessing(inputs[:10], columns=columns_name)
+dataProcessing = DataProcessing(features, columns=columns_name)
 dataProcessing.normalize()
 inputs = dataProcessing.get_data()
 
-print(inputs)
-print(targets)
+print(f"inputs after data processing:\n{inputs}")
+print(f"targets after data processing:\n{targets}")
 
 # Create model with random weights
 models = [Logreg(len(columns_name), name=name) for name in house_matrix]
 
-for epoch in range(2):
-	print(f"\n--- EPOCH {epoch} ---\n")
-	for i, model in enumerate(models):
-		print(f"Train {model.name}...")
-		for features, target in zip(inputs[:1], targets[:1]):
-			model.gradient_descent(features, target[i])
 
-		
+# for epoch in range(5):
+epoch = 0
+accuracy = 0
+while accuracy < 0.98:
+	print(f"\n--- EPOCH {epoch} ---\n")
+
+	loss_sum = 0
+	accuracy_sum = 0
+	for features, target in zip(inputs, targets):
+
+		prediction = []
+		for i, model in enumerate(models):
+			# print(f"\nTrain {model.name}...")
+			l, p = model.gradient_descent(features, target[i])
+
+			loss_sum += l
+			prediction.append(p)
+
+		# Right prediction
+		if target[np.array(prediction).argmax()]:
+			accuracy_sum += 1
+	
+	epoch += 1
+	loss = loss_sum / (len(models) * len(inputs))
+	accuracy = accuracy_sum / len(inputs)
+
+	print(f"EPOCH {epoch} -> Loss:     {loss}")
+	print(f"EPOCH {epoch} -> Accuracy: {accuracy} ({accuracy_sum}/{len(inputs)})")
+
+print(f"--- TRAIN FINISH --- epoch: {epoch} / accuracy: {accuracy}")
+
+dataProcessing.save_data("ressources/normalization.txt")
+[model.save_weights("ressources/weights.txt") for model in models]
