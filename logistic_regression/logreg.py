@@ -1,6 +1,25 @@
 import math
 import numpy as np
 
+house_matrix = ["Gryffindor",
+				"Hufflepuff",
+				"Ravenclaw",
+				"Slytherin"]
+
+pertinent_features = {'Arithmancy': 6,
+						'Astronomy': 7,
+						'Herbology': 8,
+						'Defense Against the Dark Arts': 9,
+						'Divination': 10,
+						'Muggle Studies': 11,
+						'Ancient Runes': 12,
+						'History of Magic': 13,
+						'Transfiguration': 14,
+						'Potions': 15,
+						'Care of Magical Creatures': 16,
+						'Charms': 17,
+						'Flying': 18}
+
 # Logistic Regression One vs All
 class Logreg():
 
@@ -10,7 +29,7 @@ class Logreg():
 		sig = 1 / (1 + np.exp(-x))
 		return sig
 
-	def __init__(self, n_inputs, weights=None, lr=0.1, name=None):
+	def __init__(self, n_inputs, weights=None, lr=0.5, name=None):
 
 		print(f"Logreg init(), {n_inputs} features, weights={weights}, name={name}")
 		if weights:
@@ -21,6 +40,7 @@ class Logreg():
 			self.w = np.random.rand(n_inputs) * 2 - 1
 			self.b = np.random.rand()
 		print(f"\tWeight init: {self.w}")
+		print(f"\tBias   init: {self.b}")
 		self.lr = lr
 		self.name = name
 
@@ -58,25 +78,26 @@ class Logreg():
 				∂J(θ) / ∂θj = AVERAGE[ (hθ(xi) − yi)xi ]
 		"""
 
-		prediction = self.forward(features)
 		# print(f"Features: {features}")
+		# print(f"Target:     {target}")
+		prediction = self.forward(features)
 		# print(f"self.w: {self.w}") 
 		# print(f"Prediction: {prediction}")
-		# print(f"Target:     {target}")
 
 		loss = -target * math.log(prediction) - (1 - target) * math.log(1 - prediction)
 		dloss = (prediction - target)
 		dfa = self.sigmoid(self.weighted_sum) * (1 - self.sigmoid(self.weighted_sum))
 		dws = features
 
-		# dE/dw = dE/dOut * dOut/dws * dws/dw
-		self.w = self.w - self.lr * dws * dfa * dloss
-		self.b = self.b - self.lr * 1 * dfa * dloss
-
 		# print(f"Loss: {loss}")
 		# print(f"dLoss: {dloss}")
 		# print(f"dfa: {dfa}")
 		# print(f"dws: {dws}")
+
+		# dE/dw = dE/dOut * dOut/dws * dws/dw
+		self.w = self.w - self.lr * dws * dfa * dloss
+		self.b = self.b - self.lr * 1 * dfa * dloss
+
 		# print(f"gradient: {dws * dfa * dloss}")
 		# print(f"self.w: {self.w}")
 		return loss, prediction
@@ -97,6 +118,7 @@ class Logreg():
 
 	def save_weights(self, file_path):
 
-		with open(file_path, 'w') as f:
+		with open(file_path, 'a') as f:
+			print(f"self.w: {self.w}")
 			[f.write(f"{w}, ") for w in np.nditer(self.w)]
 			f.write(f"{self.b}\n")

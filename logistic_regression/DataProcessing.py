@@ -1,13 +1,13 @@
 import numpy as np
-import pandas as pd
+# import pandas as pd
 
 class DataProcessing():
 
 	def __init__(self, data, columns=None):
 
 		# print(f"Data: {data}")
-		if not isinstance(data, pd.DataFrame):
-			data = pd.DataFrame(data=data, columns=columns)
+		# if not isinstance(data, pd.DataFrame):
+		# 	data = pd.DataFrame(data=data, columns=columns)
 		self.df = data
 		self.columns = columns
 		self.normalization_data = []
@@ -26,18 +26,24 @@ class DataProcessing():
 
 		else:
 			for feature, column in self.df.items():
-				_min = column.min()
-				_max = column.max()
+				_min = min(column)
+				_max = max(column)
+				# _min = column.min()
+				# _max = column.max()
 				self.normalization_data.append([_min, _max])
-				# new_lst.append([(x - _min) / (_max - _min) for x in column.values])
-				data[feature] = [(x - _min) / (_max - _min) for x in column.values]
+				data[feature] = [(x - _min) / (_max - _min) for x in column]
+				# data[feature] = [(x - _min) / (_max - _min) for x in column.values]
 
-		self.df = pd.DataFrame(data=data, columns=self.columns)
+		self.df = data
+		# self.df = pd.DataFrame(data=data, columns=self.columns)
 
 	def get_data(self, data_type="2d_np_array"):
 
 		if data_type == "2d_np_array":
-			return self.df.to_numpy()
+			pass
+			# return self.df.to_numpy()
+		elif data_type == "2d_array":
+			return np.array([np.array(features) for features in zip(*list(self.df.values()))])
 		elif data_type == "DataFrame":
 			return self.df
 
@@ -46,14 +52,14 @@ class DataProcessing():
 		with open(file_path, 'w') as f:
 
 			if normalization:
-				f.write("Normalization data")
+				f.write("Normalization data\n")
 				for _min, _max in self.normalization_data:
-					f.write(f"{_min}/{_max}")
+					f.write(f"{_min}/{_max}\n")
 			
 			if standardization:
-				f.write("Standardization data")
+				f.write("Standardization data\n")
 				for mean, std in self.standardization_data:
-					f.write(f"{mean}/{std}")
+					f.write(f"{mean}/{std}\n")
 
 			f.close()
 

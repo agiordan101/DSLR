@@ -1,28 +1,21 @@
 import sys
 import numpy as np
-from logreg import Logreg
+#from logreg import Logreg
+from logreg import *
 from DataProcessing import DataProcessing
 
-house_matrix = ["Gryffindor",
-				"Hufflepuff",
-				"Ravenclaw",
-				"Slytherin"]
-
-pertinent_features = {'Astronomy': 7,
-						'Herbology': 8,
-						'Defense Against the Dark Arts': 9,
-						'Ancient Runes': 12}
+normalization_path = "ressources/normalization.txt"
+weights_path = "ressources/weights.txt"
 
 def house_to_nparray(house):
 	target = np.zeros(4)
 	target[house_matrix.index(house)] = 1
 	return target
 
-def parse(dataset_path):
-
+def parse(train_dataset):
 
 	#Open dataset file
-	dataset_file = open(dataset_path, 'r')
+	dataset_file = open(train_dataset, 'r')
 	features_str = dataset_file.read()
 	dataset_file.close()
 
@@ -39,42 +32,56 @@ def parse(dataset_path):
 		targets.append(house_to_nparray(student_strlst[1]))
 
 		for feature, i in pertinent_features.items():
-			features[feature].append(float(student_strlst[i]) if len(student_strlst[i]) else 0)
+			features[feature].append(float(student_strlst[i]) if student_strlst[i] else 0)
 
 	# print(f"features: {features}\n")
 	return features, np.array(targets)
 
 
 # Protection
-if len(sys.argv) != 2:
-	print("1 argument needed: dataset")
+if len(sys.argv) < 2:
+	print("1 argument needed: train_dataset")
 	exit(1)
 
 # Parsing
-features, targets = parse(sys.argv[1])
+train_dataset, targets = parse(sys.argv[1])
 columns_name = list(pertinent_features.keys())
 
-dataProcessing = DataProcessing(features, columns=columns_name)
-dataProcessing.normalize()
-inputs = dataProcessing.get_data()
+# print(f"features ({len(features.items())} features) : {features}")
 
-print(f"inputs after data processing:\n{inputs}")
-print(f"targets after data processing:\n{targets}")
+dataProcessing = DataProcessing(train_dataset, columns=columns_name)
+dataProcessing.normalize()
+train_dataset = dataProcessing.get_data("2d_array")
+
+if len(train_dataset) != len(targets):
+	print(f"len(train_dataset) = {len(train_dataset)}")
+	print(f"len(targets) = {len(targets)}")
+	exit(0)
+
+# print(f"train_dataset after data processing:\n{train_dataset}")
+# print(f"train_dataset len: {len(train_dataset)}")
+# print(f"train_dataset[0] len: {len(train_dataset[0])}")
+# exit(0)
+
+# print(f"targets after data processing:\n{targets}")
 
 # Create model with random weights
 models = [Logreg(len(columns_name), name=name) for name in house_matrix]
 
-
 # for epoch in range(5):
 epoch = 0
 accuracy = 0
-while accuracy < 0.98:
+loss = 100
+last_loss = 1000
+while loss < last_loss:
 	print(f"\n--- EPOCH {epoch} ---\n")
 
 	loss_sum = 0
 	accuracy_sum = 0
-	for features, target in zip(inputs, targets):
+	fail = 0
+	for features, target in zip(train_dataset, targets):
 
+		# print(f"n features: {len(features)}")
 		prediction = []
 		for i, model in enumerate(models):
 			# print(f"\nTrain {model.name}...")
@@ -86,15 +93,24 @@ while accuracy < 0.98:
 		# Right prediction
 		if target[np.array(prediction).argmax()]:
 			accuracy_sum += 1
-	
-	epoch += 1
-	loss = loss_sum / (len(models) * len(inputs))
-	accuracy = accuracy_sum / len(inputs)
+		else:
+			fail += 1
+			print(f"[FAIL] Prediction: {prediction} / Expected: {target}")
+
+	print(f"len: {len(train_dataset)} / {len(targets)} --- win: {accuracy_sum} --- fail: {fail}")
+
+	last_loss = loss
+	loss = loss_sum / (len(models) * len(train_dataset))
+	accuracy = accuracy_sum / len(train_dataset)
 
 	print(f"EPOCH {epoch} -> Loss:     {loss}")
-	print(f"EPOCH {epoch} -> Accuracy: {accuracy} ({accuracy_sum}/{len(inputs)})")
+	print(f"EPOCH {epoch} -> Accuracy: {accuracy} ({accuracy_sum}/{len(train_dataset)})")
+	epoch += 1
 
-print(f"--- TRAIN FINISH --- epoch: {epoch} / accuracy: {accuracy}")
+print(f"--- TRAIN FINISH --- {epoch} epochs / loss: {loss} / accuracy: {accuracy}\n")
 
-dataProcessing.save_data("ressources/normalization.txt")
-[model.save_weights("ressources/weights.txt") for model in models]
+dataProcessing.save_data(normalization_path, normalization=True)
+
+with open(weights_path, 'w') as f:
+	f.close()
+	[model.save_weights(weights_path) for model in models]
