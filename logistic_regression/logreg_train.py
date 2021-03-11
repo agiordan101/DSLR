@@ -2,7 +2,7 @@ import sys
 import numpy as np
 #from logreg import Logreg
 from logreg import *
-from DataProcessing import DataProcessing
+from DataProcessing import *
 
 normalization_path = "ressources/normalization.txt"
 weights_path = "ressources/weights.txt"
@@ -31,7 +31,7 @@ def parse(train_dataset):
 
 		targets.append(house_to_nparray(student_strlst[1]))
 
-		for feature, i in pertinent_features.items():
+		for feature, i in columns_name:
 			features[feature].append(float(student_strlst[i]) if student_strlst[i] else 0)
 
 	# print(f"features: {features}\n")
@@ -45,7 +45,6 @@ if len(sys.argv) < 2:
 
 # Parsing
 train_dataset, targets = parse(sys.argv[1])
-columns_name = list(pertinent_features.keys())
 
 # print(f"features ({len(features.items())} features) : {features}")
 

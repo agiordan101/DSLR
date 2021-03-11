@@ -144,6 +144,7 @@ for feature in features:
 #Print data
 for j in range(maxLengthFeature + 1):
     print(" ", end = "")
+
 printValue("count")
 printValue("mean")
 printValue("std")
@@ -153,6 +154,7 @@ printValue("25%")
 printValue("50%")
 printValue("75%")
 printValue("max")
+
 for i in range(len(features)):
     print("\n%s"%features[i], end="")
     for j in range(maxLengthFeature + 1 - len(features[i])):

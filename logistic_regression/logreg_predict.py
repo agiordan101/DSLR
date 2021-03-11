@@ -2,6 +2,7 @@ import sys
 import numpy as np
 #from logreg import Logreg
 from logreg import *
+from DataProcessing import *
 
 # def parse(dataset_path, weights_path):
 	
@@ -26,24 +27,17 @@ def parse(dataset_path, weights_path):
 	features_str = dataset_file.read()
 	dataset_file.close()
 
-	features = []
+	# Init data structure
+	features = {}
+	for feature in columns_name:
+		features[feature] = []
+
+	# Fill
 	for student_str in features_str.split("\n")[1:-1]:
-		# print(f"Student: {student.split(',')[6:]}")
 		student_strlst = student_str.split(',')
 
-		student = []
-		for i in pertinent_features.values():
-			# if len(student_strlst[i]):
-			# 	n = float(student_strlst[i])
-			# else:
-			# 	print(f"Not a float: {student_strlst[i]}")
-			# 	n = 0
-			# student.append(n)
-			student.append(float(student_strlst[i]) if student_strlst[i] else 0)
-
-		features.append(student)
-	# print(f"inputs: {features}\n")
-
+		for feature, i in pertinent_features.items():
+			features[feature].append(float(student_strlst[i]) if student_strlst[i] else 0)
 
 	#Open weights file
 	weights_file = open(weights_path, 'r')
@@ -62,9 +56,13 @@ if len(sys.argv) != 3:
 	exit(1)
 
 # Parsing
-inputs, model = parse(sys.argv[1], sys.argv[2])
+test_dataset, model = parse(sys.argv[1], sys.argv[2])
 
-print(f"features ({len(inputs[0])} features) : {inputs}")
+dataProcessing = DataProcessing(test_dataset, columns=columns_name)
+dataProcessing.normalize()
+test_dataset = dataProcessing.get_data(data_type="2d_array")
+
+print(f"features ({len(test_dataset)} features) : {test_dataset}")
 print(f"Weights: {model}")
 
 # Create model with weights already trainned
@@ -74,7 +72,7 @@ model = [Logreg(len(weights), weights=weights) for weights in model]
 houses_file = open("houses.csv", 'w')
 houses_file.write("Index,Hogwarts House\n")
 
-for i, features in enumerate(inputs):
+for i, features in enumerate(test_dataset):
 
 	houses_file.write(str(i))
 	houses_file.write(",")

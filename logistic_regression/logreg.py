@@ -20,6 +20,8 @@ pertinent_features = {'Arithmancy': 6,
 						'Charms': 17,
 						'Flying': 18}
 
+columns_name = list(pertinent_features.keys())
+
 # Logistic Regression One vs All
 class Logreg():
 
