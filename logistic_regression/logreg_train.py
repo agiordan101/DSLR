@@ -31,7 +31,7 @@ def parse(train_dataset):
 
 		targets.append(house_to_nparray(student_strlst[1]))
 
-		for feature, i in columns_name:
+		for feature, i in pertinent_features.items():
 			features[feature].append(float(student_strlst[i]) if student_strlst[i] else 0)
 
 	# print(f"features: {features}\n")
@@ -46,8 +46,6 @@ if len(sys.argv) < 2:
 # Parsing
 train_dataset, targets = parse(sys.argv[1])
 
-# print(f"features ({len(features.items())} features) : {features}")
-
 dataProcessing = DataProcessing(train_dataset, columns=columns_name)
 dataProcessing.normalize()
 train_dataset = dataProcessing.get_data("2d_array")
@@ -56,13 +54,6 @@ if len(train_dataset) != len(targets):
 	print(f"len(train_dataset) = {len(train_dataset)}")
 	print(f"len(targets) = {len(targets)}")
 	exit(0)
-
-# print(f"train_dataset after data processing:\n{train_dataset}")
-# print(f"train_dataset len: {len(train_dataset)}")
-# print(f"train_dataset[0] len: {len(train_dataset[0])}")
-# exit(0)
-
-# print(f"targets after data processing:\n{targets}")
 
 # Create model with random weights
 models = [Logreg(len(columns_name), name=name) for name in house_matrix]
@@ -94,7 +85,7 @@ while loss < last_loss:
 			accuracy_sum += 1
 		else:
 			fail += 1
-			print(f"[FAIL] Prediction: {prediction} / Expected: {target}")
+			# print(f"[FAIL] Prediction: {prediction} / Expected: {target}")
 
 	print(f"len: {len(train_dataset)} / {len(targets)} --- win: {accuracy_sum} --- fail: {fail}")
 

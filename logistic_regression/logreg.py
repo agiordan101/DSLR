@@ -104,23 +104,10 @@ class Logreg():
 		# print(f"self.w: {self.w}")
 		return loss, prediction
 
-	# def backpropagation(self, train_x, train_y, GD_method='SGD'):
-	# 	"""
-	# 		dE/dw = dE/dOut * dOut/dws * dws/dw
-	# 	"""
-	# 	data = np.choices(zip(inputs, targets), len(inputs) / 4)
-
-	# 	if GD_method == "SGD":
-
-	# 		for input_batch, target_batch in get_batch(train_x, train_y):
-	# 			self.gradient_descent(input_batch, target_batch)
-
-	# 	else:
-	# 		self.gradient_descent(inputs, targets)
 
 	def save_weights(self, file_path):
 
 		with open(file_path, 'a') as f:
-			print(f"self.w: {self.w}")
+			# print(f"self.w: {self.w}")
 			[f.write(f"{w}, ") for w in np.nditer(self.w)]
 			f.write(f"{self.b}\n")

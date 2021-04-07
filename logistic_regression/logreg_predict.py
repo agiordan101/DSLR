@@ -4,22 +4,6 @@ import numpy as np
 from logreg import *
 from DataProcessing import *
 
-# def parse(dataset_path, weights_path):
-	
-# 	#Open dataset file
-# 	dataset_file = open(dataset_path, 'r')
-# 	features = dataset_file.read()
-# 	dataset_file.close()
-
-# 	#Open weights file
-# 	weights_file = open(weights_path, 'r')
-# 	model = weights_file.read()
-# 	weights_file.close()
-
-# 	#Save weights as 
-# 	#Save dataset
-# 	return np.array([[float(x) if x else 0 for x in student.split(',')[6:]] for student in features.split("\n")[1:-1]]), [[float(x) if x else 0 for x in neuron.split(',')] for neuron in model[:-1].split("\n")]
-
 def parse(dataset_path, weights_path):
 
 	#Open dataset file
