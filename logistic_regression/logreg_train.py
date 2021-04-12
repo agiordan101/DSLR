@@ -34,7 +34,6 @@ def parse(train_dataset):
 		for feature, i in pertinent_features.items():
 			features[feature].append(float(student_strlst[i]) if student_strlst[i] else 0)
 
-	# print(f"features: {features}\n")
 	return features, np.array(targets)
 
 
@@ -71,10 +70,8 @@ while loss < last_loss:
 	fail = 0
 	for features, target in zip(train_dataset, targets):
 
-		# print(f"n features: {len(features)}")
 		prediction = []
 		for i, model in enumerate(models):
-			# print(f"\nTrain {model.name}...")
 			l, p = model.gradient_descent(features, target[i])
 
 			loss_sum += l
@@ -85,7 +82,6 @@ while loss < last_loss:
 			accuracy_sum += 1
 		else:
 			fail += 1
-			# print(f"[FAIL] Prediction: {prediction} / Expected: {target}")
 
 	print(f"len: {len(train_dataset)} / {len(targets)} --- win: {accuracy_sum} --- fail: {fail}")
 

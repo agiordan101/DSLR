@@ -27,7 +27,6 @@ class Logreg():
 
 	@classmethod
 	def sigmoid(self, x):
-		# return np.array([1 / (1 + np.exp(-x)) for x in np.nditer(inputs)])
 		sig = 1 / (1 + np.exp(-x))
 		return sig
 
@@ -48,12 +47,6 @@ class Logreg():
 
 
 	def forward(self, inputs):
-		# print(f"Forward inputs shape {inputs.shape}")
-		# print(f"Forward weights shape {self.w.shape}")
-
-		# if len(inputs.shape) > 1:
-		# 	return np.array([self.sigmoid(np.dot(self.w, x) + self.b) for x in np.nditer(inputs)])
-		# else:
 		self.weighted_sum = np.dot(self.w, inputs) + self.b
 		return self.sigmoid(self.weighted_sum)
 
@@ -80,34 +73,22 @@ class Logreg():
 				∂J(θ) / ∂θj = AVERAGE[ (hθ(xi) − yi)xi ]
 		"""
 
-		# print(f"Features: {features}")
-		# print(f"Target:     {target}")
 		prediction = self.forward(features)
-		# print(f"self.w: {self.w}") 
-		# print(f"Prediction: {prediction}")
 
 		loss = -target * math.log(prediction) - (1 - target) * math.log(1 - prediction)
 		dloss = (prediction - target)
 		dfa = self.sigmoid(self.weighted_sum) * (1 - self.sigmoid(self.weighted_sum))
 		dws = features
 
-		# print(f"Loss: {loss}")
-		# print(f"dLoss: {dloss}")
-		# print(f"dfa: {dfa}")
-		# print(f"dws: {dws}")
-
 		# dE/dw = dE/dOut * dOut/dws * dws/dw
 		self.w = self.w - self.lr * dws * dfa * dloss
 		self.b = self.b - self.lr * 1 * dfa * dloss
 
-		# print(f"gradient: {dws * dfa * dloss}")
-		# print(f"self.w: {self.w}")
 		return loss, prediction
 
 
 	def save_weights(self, file_path):
 
 		with open(file_path, 'a') as f:
-			# print(f"self.w: {self.w}")
 			[f.write(f"{w}, ") for w in np.nditer(self.w)]
 			f.write(f"{self.b}\n")

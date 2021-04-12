@@ -1,13 +1,9 @@
 import numpy as np
-# import pandas as pd
 
 class DataProcessing():
 
 	def __init__(self, data, columns=None):
 
-		# print(f"Data: {data}")
-		# if not isinstance(data, pd.DataFrame):
-		# 	data = pd.DataFrame(data=data, columns=columns)
 		self.df = data
 		self.columns = columns
 		self.normalization_data = []
@@ -21,18 +17,14 @@ class DataProcessing():
 		if self.normalization_data:
 			
 			for item, data in zip(self.df.items(), self.normalization_data):
-				# new_lst.append([(x - data[0]) / (data[1] - data[0]) for x in item[1].values])
 				data[item[0]] = [(x - _min) / (_max - _min) for x in column.values]
 
 		else:
 			for feature, column in self.df.items():
 				_min = min(column)
 				_max = max(column)
-				# _min = column.min()
-				# _max = column.max()
 				self.normalization_data.append([_min, _max])
 				data[feature] = [(x - _min) / (_max - _min) for x in column]
-				# data[feature] = [(x - _min) / (_max - _min) for x in column.values]
 
 		self.df = data
 		# self.df = pd.DataFrame(data=data, columns=self.columns)
@@ -41,7 +33,6 @@ class DataProcessing():
 
 		if data_type == "2d_np_array":
 			pass
-			# return self.df.to_numpy()
 		elif data_type == "2d_array":
 			return np.array([np.array(features) for features in zip(*list(self.df.values()))])
 		elif data_type == "DataFrame":

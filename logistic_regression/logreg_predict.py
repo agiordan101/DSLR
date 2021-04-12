@@ -30,7 +30,6 @@ def parse(dataset_path, weights_path):
 
 	model = [[float(x) if x else 0 for x in neuron.split(',')] for neuron in model[:-1].split("\n")]
 
-	# print(f"features: {features}\n")
 	return features, model
 
 
@@ -64,8 +63,6 @@ for i, features in enumerate(test_dataset):
 	predictions = [neuron.forward(features) for neuron in model]
 	house = house_matrix[np.argmax(predictions)]
 
-	# if i == 0:
-	# 	print(f"{i} ->\t{features}")
 	print(f"Prediction:\t{predictions}")
 	print(f"House:\t{house}")
 
