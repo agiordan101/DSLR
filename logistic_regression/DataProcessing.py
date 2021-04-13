@@ -2,9 +2,10 @@ import numpy as np
 
 class DataProcessing():
 
-	def __init__(self, data, columns=None):
+	def __init__(self, data, targets, columns=None):
 
 		self.df = data
+		self.targets = targets
 		self.columns = columns
 		self.normalization_data = []
 		self.standardization_data = []
@@ -29,18 +30,30 @@ class DataProcessing():
 		self.df = data
 		# self.df = pd.DataFrame(data=data, columns=self.columns)
 
-	def get_data(self, data_type="2d_np_array"):
+	def get_data(self, data_type="2d_np_array", shuffle=True):
 
 		if data_type == "2d_np_array":
 			pass
+
 		elif data_type == "2d_array":
-			return np.array([np.array(features) for features in zip(*list(self.df.values()))])
+			features = np.array([np.array(features) for features in zip(*list(self.df.values()))])
+			targets = self.targets
+			if shuffle:
+				print(f"features {features.shape}:\n{features}")
+				seed = np.random.get_state()
+				np.random.shuffle(features)
+				np.random.set_state(seed)
+				np.random.shuffle(targets)
+				
+				print(f"features {features.shape}:\n{features}")
+			return features, targets
+
 		elif data_type == "DataFrame":
 			return self.df
 
 	def save_data(self, file_path, normalization=False, standardization=False):
 
-		with open(file_path, 'w') as f:
+		with open(file_path, 'w+') as f:
 
 			if normalization:
 				f.write("Normalization data\n")

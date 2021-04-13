@@ -6,19 +6,28 @@ house_matrix = ["Gryffindor",
 				"Ravenclaw",
 				"Slytherin"]
 
-pertinent_features = {'Arithmancy': 6,
-						'Astronomy': 7,
-						'Herbology': 8,
-						'Defense Against the Dark Arts': 9,
-						'Divination': 10,
-						'Muggle Studies': 11,
-						'Ancient Runes': 12,
-						'History of Magic': 13,
-						'Transfiguration': 14,
-						'Potions': 15,
-						'Care of Magical Creatures': 16,
-						'Charms': 17,
-						'Flying': 18}
+pertinent_features = {
+	'Arithmancy': 6,
+	'Astronomy': 7,
+	'Herbology': 8,
+	'Defense Against the Dark Arts': 9,
+	'Divination': 10,
+	'Muggle Studies': 11,
+	'Ancient Runes': 12,
+	'History of Magic': 13,
+	'Transfiguration': 14,
+	'Potions': 15,
+	'Care of Magical Creatures': 16,
+	'Charms': 17,
+	'Flying': 18
+}
+
+# pertinent_features = {
+# 	'Astronomy': 7,
+# 	'Herbology': 8,
+# 	'Muggle Studies': 11,
+# 	'History of Magic': 13,
+# }
 
 columns_name = list(pertinent_features.keys())
 
@@ -50,15 +59,15 @@ class Logreg():
 		self.weighted_sum = np.dot(self.w, inputs) + self.b
 		return self.sigmoid(self.weighted_sum)
 
-	def get_batch(self, d1, d2, GD_batchsize=0.2):
+	# def get_batch(self, d1, d2, GD_batchsize=0.2):
 
-		batchs = range(0, len(d1), int(GD_batchsize * len(d1)))
-		batchs_min = batchs[:-1]
-		batchs_max = batchs[1:]
-		print(f"Batchs:{batchs_min}\n{batchs_max}")
+	# 	batchs = range(0, len(d1), int(GD_batchsize * len(d1)))
+	# 	batchs_min = batchs[:-1]
+	# 	batchs_max = batchs[1:]
+	# 	print(f"Batchs:{batchs_min}\n{batchs_max}")
 
-		for bound_min, bound_max in zip(batchs_min, batchs_max):
-			yield d1[bound_min:bound_max], d2[bound_min:bound_max]
+	# 	for bound_min, bound_max in zip(batchs_min, batchs_max):
+	# 		yield d1[bound_min:bound_max], d2[bound_min:bound_max]
 
 	def gradient_descent(self, features, target):
 		"""
@@ -73,6 +82,7 @@ class Logreg():
 				∂J(θ) / ∂θj = AVERAGE[ (hθ(xi) − yi)xi ]
 		"""
 
+		# print(f"features {features.shape}:\n{features}")
 		prediction = self.forward(features)
 
 		loss = -target * math.log(prediction) - (1 - target) * math.log(1 - prediction)
@@ -85,7 +95,6 @@ class Logreg():
 		self.b = self.b - self.lr * 1 * dfa * dloss
 
 		return loss, prediction
-
 
 	def save_weights(self, file_path):
 

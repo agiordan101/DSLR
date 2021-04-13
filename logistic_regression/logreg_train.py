@@ -3,6 +3,7 @@ import numpy as np
 #from logreg import Logreg
 from logreg import *
 from DataProcessing import *
+import matplotlib.pyplot as plt
 
 normalization_path = "ressources/normalization.txt"
 weights_path = "ressources/weights.txt"
@@ -42,12 +43,22 @@ if len(sys.argv) < 2:
 	print("1 argument needed: train_dataset")
 	exit(1)
 
+# Option EarlyStopping
+delta_min_loss = 0.00001
+for i, arg in enumerate(sys.argv):
+	if "-earlystopping" in arg.lower() and i + 1 < len(sys.argv):
+		delta_min_loss = sys.argv[i + 1]
+
 # Parsing
 train_dataset, targets = parse(sys.argv[1])
 
-dataProcessing = DataProcessing(train_dataset, columns=columns_name)
+dataProcessing = DataProcessing(train_dataset, targets, columns=columns_name)
 dataProcessing.normalize()
-train_dataset = dataProcessing.get_data("2d_array")
+train_dataset, targets = dataProcessing.get_data(
+	data_type="2d_array",
+	# shuffle=False,
+	shuffle=True,
+)
 
 if len(train_dataset) != len(targets):
 	print(f"len(train_dataset) = {len(train_dataset)}")
@@ -58,11 +69,14 @@ if len(train_dataset) != len(targets):
 models = [Logreg(len(columns_name), name=name) for name in house_matrix]
 
 # for epoch in range(5):
+delta_min_loss = 0.00001
 epoch = 0
+accuracies = []
 accuracy = 0
+losses = []
 loss = 100
 last_loss = 1000
-while loss < last_loss:
+while loss < last_loss - delta_min_loss:
 	print(f"\n--- EPOCH {epoch} ---\n")
 
 	loss_sum = 0
@@ -87,7 +101,10 @@ while loss < last_loss:
 
 	last_loss = loss
 	loss = loss_sum / (len(models) * len(train_dataset))
+	losses.append(loss)
+	
 	accuracy = accuracy_sum / len(train_dataset)
+	accuracies.append(accuracy)
 
 	print(f"EPOCH {epoch} -> Loss:     {loss}")
 	print(f"EPOCH {epoch} -> Accuracy: {accuracy} ({accuracy_sum}/{len(train_dataset)})")
@@ -95,8 +112,13 @@ while loss < last_loss:
 
 print(f"--- TRAIN FINISH --- {epoch} epochs / loss: {loss} / accuracy: {accuracy}\n")
 
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
+ax1.plot(losses)
+ax2.plot(accuracies)
+plt.show()
+
 dataProcessing.save_data(normalization_path, normalization=True)
 
-with open(weights_path, 'w') as f:
+with open(weights_path, 'w+') as f:
 	f.close()
 	[model.save_weights(weights_path) for model in models]

@@ -16,3 +16,11 @@ Etape 1 -> Trier les valeurs
 Etape 2 -> Calculer
 
 dataset : 1ere dimension sont les elèves, 2eme leurs features
+
+bonus: graph loss,
+        graph accuracy,
+        features selection,
+        earlystopping,
+        verbose win/fail
+        module preprocessing
+        ...
